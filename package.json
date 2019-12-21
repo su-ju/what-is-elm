@@ -1,0 +1,26 @@
+{
+  "name": "what-is-elm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julian-suess/what-is-elm.git"
+  },
+  "author": "Julian Süss",
+  "license": "MIT",
+  "description": "Baby don't hurt me.",
+  "bugs": {
+    "url": "https://github.com/julian-suess/what-is-elm/issues"
+  },
+  "homepage": "https://github.com/julian-suess/what-is-elm#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "elm-hot": "^1.1.4",
+    "gh-pages": "^2.1.1",
+    "node-elm-compiler": "^5.0.4"
+  }
+}
