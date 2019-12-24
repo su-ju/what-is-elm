@@ -2,10 +2,12 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
+import Common exposing (ElmuiModel, HomeModel, Page(..), Route(..))
 import Html exposing (Html, a, footer, h1, li, nav, text, ul)
 import Html.Attributes exposing (classList, href)
 import Html.Lazy exposing (lazy)
 import Pages.Elmui as Elmui
+import Pages.Home as Home
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), Parser, s, string)
 
@@ -14,17 +16,6 @@ type alias Model =
     { page : Page
     , key : Nav.Key
     }
-
-
-type Page
-    = ElmuiPage Elmui.Model
-    | HomePage
-    | NotFound
-
-
-type Route
-    = HomeRoute
-    | ElmuiRoute
 
 
 view : Model -> Document Msg
@@ -36,74 +27,33 @@ view model =
                     Elmui.view elmui
                         |> Html.map GotElmuiMsg
 
-                HomePage ->
-                    text "HomePage"
+                HomePage home ->
+                    Home.view home
+                        |> Html.map GotHomePageMsg
 
                 NotFound ->
                     text "Not Found"
     in
-    { title = "Photo Groove, SPA Style"
+    { title = "What is elm?"
     , body =
-        [ lazy viewHeader model.page
-        , content
-        , viewFooter
-        ]
+        [ content ]
     }
-
-
-viewHeader : Page -> Html Msg
-viewHeader page =
-    let
-        logo =
-            h1 [] [ text "Photo Groove" ]
-
-        links =
-            ul []
-                [ navLink HomeRoute { url = "/", caption = "Home" }
-                , navLink ElmuiRoute { url = "/elmui", caption = "Elmui" }
-                ]
-
-        navLink : Route -> { url : String, caption : String } -> Html msg
-        navLink route { url, caption } =
-            li [ classList [ ( "active", isActive { link = route, page = page } ) ] ]
-                [ a [ href url ] [ text caption ] ]
-    in
-    nav [] [ logo, links ]
 
 
 parser : Parser (Route -> a) a
 parser =
     Parser.oneOf
         [ Parser.map HomeRoute Parser.top
-        , Parser.map ElmuiRoute (s "elmui")
+        , Parser.map ElmuiHomeRoute (s "elmui")
+        , Parser.map ElmuiRoute (s "elmui" </> Parser.string)
         ]
-
-
-isActive : { link : Route, page : Page } -> Bool
-isActive { link, page } =
-    case ( link, page ) of
-        ( HomeRoute, HomePage ) ->
-            True
-
-        ( HomeRoute, _ ) ->
-            False
-
-        ( ElmuiRoute, ElmuiPage _ ) ->
-            True
-
-        ( ElmuiRoute, _ ) ->
-            False
-
-
-viewFooter : Html msg
-viewFooter =
-    footer [] [ text "One is never alone with a rubber duck. -Douglas Adams" ]
 
 
 type Msg
     = ClickedLink Browser.UrlRequest
     | ChangedUrl Url
     | GotElmuiMsg Elmui.Msg
+    | GotHomePageMsg Home.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -128,11 +78,26 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        GotHomePageMsg foldersMsg ->
+            case model.page of
+                HomePage folders ->
+                    toHome model (Home.update foldersMsg folders)
 
-toFolders : Model -> ( Elmui.Model, Cmd Elmui.Msg ) -> ( Model, Cmd Msg )
+                _ ->
+                    ( model, Cmd.none )
+
+
+toFolders : Model -> ( ElmuiModel, Cmd Elmui.Msg ) -> ( Model, Cmd Msg )
 toFolders model ( folders, cmd ) =
     ( { model | page = ElmuiPage folders }
     , Cmd.map GotElmuiMsg cmd
+    )
+
+
+toHome : Model -> ( HomeModel, Cmd Home.Msg ) -> ( Model, Cmd Msg )
+toHome model ( home, cmd ) =
+    ( { model | page = HomePage home }
+    , Cmd.map GotHomePageMsg cmd
     )
 
 
@@ -162,10 +127,14 @@ updateUrl : Url -> Model -> ( Model, Cmd Msg )
 updateUrl url model =
     case Parser.parse parser url of
         Just HomeRoute ->
-            ( { model | page = HomePage }, Cmd.none )
+            ( { model | page = HomePage 10 }, Cmd.none )
 
-        Just ElmuiRoute ->
-            toFolders model (Elmui.init ())
+        Just (ElmuiRoute val) ->
+            ( { model | page = ElmuiPage (Elmui.createModel val) }, Cmd.none )
 
+        Just ElmuiHomeRoute ->
+            ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
+
+        -- toFolders model (Elmui.init ())
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
