@@ -9,7 +9,8 @@ import Html.Lazy exposing (lazy)
 import Pages.Elmui as Elmui
 import Pages.Home as Home
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>), Parser, s, string)
+import Url.Parser as Parser exposing ((</>), (<?>), Parser, s, string)
+import Url.Parser.Query as Query
 
 
 type alias Model =
@@ -42,10 +43,11 @@ view model =
 
 parser : Parser (Route -> a) a
 parser =
+    -- (ElmuiRoute (s "elmui" </> Parser.string))
     Parser.oneOf
         [ Parser.map HomeRoute Parser.top
-        , Parser.map ElmuiHomeRoute (s "elmui")
         , Parser.map ElmuiRoute (s "elmui" </> Parser.string)
+        , Parser.map ElmuiQuery (s "elmui" <?> Query.string "q")
         ]
 
 
@@ -120,7 +122,13 @@ init flags url key =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    case model.page of
+        ElmuiPage elmui ->
+            Elmui.subscriptions elmui
+                |> Sub.map GotElmuiMsg
+
+        _ ->
+            Sub.none
 
 
 updateUrl : Url -> Model -> ( Model, Cmd Msg )
@@ -132,9 +140,14 @@ updateUrl url model =
         Just (ElmuiRoute val) ->
             ( { model | page = ElmuiPage (Elmui.createModel val) }, Cmd.none )
 
-        Just ElmuiHomeRoute ->
+        Just (ElmuiQuery Nothing) ->
             ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
 
+        Just (ElmuiQuery (Just val)) ->
+            ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
+
+        -- Just ElmuiHomeRoute ->
+        --     ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
         -- toFolders model (Elmui.init ())
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
