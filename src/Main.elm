@@ -60,6 +60,7 @@ type Msg
     | GotElmuiMsg Elmui.Msg
     | GotHomePageMsg Home.Msg
     | Increment
+    | Decrement
     | NoOp
 
 
@@ -90,6 +91,38 @@ update msg model =
 
                 Just (ElmuiQuery Nothing) ->
                     ( model, Nav.pushUrl model.key (Builder.relative [ model.url.path ] [ Builder.string "q" "1" ]) )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        Decrement ->
+            let
+                buildQuery val =
+                    case String.toInt val of
+                        Just v ->
+                            let
+                                res =
+                                    v - 1
+                            in
+                            if res > 0 then
+                                [ Builder.string "q" (toString res)
+                                ]
+
+                            else
+                                []
+
+                        Nothing ->
+                            []
+            in
+            case Parser.parse parser model.url of
+                Just (ElmuiQuery (Just val)) ->
+                    ( model, Nav.pushUrl model.key (Builder.relative [ model.url.path ] (buildQuery val)) )
+
+                Just (ElmuiQuery Nothing) ->
+                    ( model, Nav.pushUrl model.key (Builder.relative [ model.url.path ] []) )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -188,6 +221,9 @@ toDirection : String -> Msg
 toDirection string =
     case string of
         "ArrowLeft" ->
+            Decrement
+
+        "ArrowRight" ->
             Increment
 
         _ ->
@@ -195,7 +231,5 @@ toDirection string =
 
 
 
--- "ArrowRight" ->
---     Decrement
 -- _ ->
 --     NoOp
