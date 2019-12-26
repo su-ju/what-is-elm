@@ -1,14 +1,18 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
+import Browser.Events exposing (onKeyDown)
 import Browser.Navigation as Nav
 import Common exposing (ElmuiModel, HomeModel, Page(..), Route(..))
+import Debug exposing (log, toString)
 import Html exposing (Html, a, footer, h1, li, nav, text, ul)
 import Html.Attributes exposing (classList, href)
 import Html.Lazy exposing (lazy)
+import Json.Decode as Decode
 import Pages.Elmui as Elmui
 import Pages.Home as Home
 import Url exposing (Url)
+import Url.Builder as Builder exposing (QueryParameter)
 import Url.Parser as Parser exposing ((</>), (<?>), Parser, s, string)
 import Url.Parser.Query as Query
 
@@ -16,6 +20,7 @@ import Url.Parser.Query as Query
 type alias Model =
     { page : Page
     , key : Nav.Key
+    , url : Url
     }
 
 
@@ -43,10 +48,8 @@ view model =
 
 parser : Parser (Route -> a) a
 parser =
-    -- (ElmuiRoute (s "elmui" </> Parser.string))
     Parser.oneOf
         [ Parser.map HomeRoute Parser.top
-        , Parser.map ElmuiRoute (s "elmui" </> Parser.string)
         , Parser.map ElmuiQuery (s "elmui" <?> Query.string "q")
         ]
 
@@ -56,6 +59,8 @@ type Msg
     | ChangedUrl Url
     | GotElmuiMsg Elmui.Msg
     | GotHomePageMsg Home.Msg
+    | Increment
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -69,8 +74,36 @@ update msg model =
                 Browser.Internal url ->
                     ( model, Nav.pushUrl model.key (Url.toString url) )
 
+        Increment ->
+            let
+                incremented val =
+                    case String.toInt val of
+                        Just v ->
+                            toString (v + 1)
+
+                        Nothing ->
+                            "1"
+            in
+            case Parser.parse parser model.url of
+                Just (ElmuiQuery (Just val)) ->
+                    ( model, Nav.pushUrl model.key (Builder.relative [ model.url.path ] [ Builder.string "q" (incremented val) ]) )
+
+                Just (ElmuiQuery Nothing) ->
+                    ( model, Nav.pushUrl model.key (Builder.relative [ model.url.path ] [ Builder.string "q" "1" ]) )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
+
         ChangedUrl url ->
-            updateUrl url model
+            updateUrl
+                url
+                model
 
         GotElmuiMsg foldersMsg ->
             case model.page of
@@ -117,15 +150,14 @@ main =
 
 init : Float -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    updateUrl url { page = NotFound, key = key }
+    updateUrl url { page = NotFound, key = key, url = url }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.page of
         ElmuiPage elmui ->
-            Elmui.subscriptions elmui
-                |> Sub.map GotElmuiMsg
+            onKeyDown keyDecoder
 
         _ ->
             Sub.none
@@ -137,17 +169,33 @@ updateUrl url model =
         Just HomeRoute ->
             ( { model | page = HomePage 10 }, Cmd.none )
 
-        Just (ElmuiRoute val) ->
-            ( { model | page = ElmuiPage (Elmui.createModel val) }, Cmd.none )
-
         Just (ElmuiQuery Nothing) ->
-            ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
+            ( { model | page = ElmuiPage (Elmui.createModel "0"), url = url }, Cmd.none )
 
         Just (ElmuiQuery (Just val)) ->
-            ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
+            ( { model | page = ElmuiPage (Elmui.createModel val), url = url }, Cmd.none )
 
-        -- Just ElmuiHomeRoute ->
-        --     ( { model | page = ElmuiPage (Elmui.createModel "0") }, Cmd.none )
-        -- toFolders model (Elmui.init ())
         Nothing ->
-            ( { model | page = NotFound }, Cmd.none )
+            ( { model | page = NotFound, url = url }, Cmd.none )
+
+
+keyDecoder : Decode.Decoder Msg
+keyDecoder =
+    Decode.map toDirection (Decode.field "key" Decode.string)
+
+
+toDirection : String -> Msg
+toDirection string =
+    case string of
+        "ArrowLeft" ->
+            Increment
+
+        _ ->
+            NoOp
+
+
+
+-- "ArrowRight" ->
+--     Decrement
+-- _ ->
+--     NoOp

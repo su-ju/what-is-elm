@@ -17,5 +17,4 @@ type Page
 
 type Route
     = HomeRoute
-    | ElmuiRoute String
     | ElmuiQuery (Maybe String)
