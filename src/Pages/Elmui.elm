@@ -1,9 +1,8 @@
 module Pages.Elmui exposing (..)
 
-import Browser
-import Common exposing (ElmuiModel, Page, Route)
-import Html exposing (..)
-import Html.Events exposing (..)
+import Common exposing (ElmuiModel)
+import Html exposing (Html, button, div, text)
+import Html.Events exposing (onClick)
 
 
 initialModel : ElmuiModel

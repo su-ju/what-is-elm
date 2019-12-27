@@ -4,16 +4,13 @@ import Browser exposing (Document)
 import Browser.Events exposing (onKeyDown)
 import Browser.Navigation as Nav
 import Common exposing (ElmuiModel, HomeModel, Page(..), Route(..))
-import Debug exposing (log, toString)
-import Html exposing (Html, a, footer, h1, li, nav, text, ul)
-import Html.Attributes exposing (classList, href)
-import Html.Lazy exposing (lazy)
+import Html exposing (Html, text)
 import Json.Decode as Decode
 import Pages.Elmui as Elmui
 import Pages.Home as Home
 import Url exposing (Url)
-import Url.Builder as Builder exposing (QueryParameter)
-import Url.Parser as Parser exposing ((</>), (<?>), Parser, s, string)
+import Url.Builder as Builder
+import Url.Parser as Parser exposing ((<?>), Parser, s, string)
 import Url.Parser.Query as Query
 
 
@@ -80,7 +77,7 @@ update msg model =
                 incremented val =
                     case String.toInt val of
                         Just v ->
-                            toString (v + 1)
+                            String.fromInt (v + 1)
 
                         Nothing ->
                             "1"
@@ -108,7 +105,7 @@ update msg model =
                                     v - 1
                             in
                             if res > 0 then
-                                [ Builder.string "q" (toString res)
+                                [ Builder.string "q" (String.fromInt res)
                                 ]
 
                             else
@@ -228,8 +225,3 @@ toDirection string =
 
         _ ->
             NoOp
-
-
-
--- _ ->
---     NoOp
