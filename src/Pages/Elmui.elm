@@ -7,6 +7,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Html exposing (Html)
 import Html.Events exposing (onClick)
+import Style exposing (..)
 
 
 initialModel : ElmuiModel
@@ -42,7 +43,16 @@ view model =
                 , height fill
                 , Background.color (rgb255 255 (model * 10) 0)
                 ]
-                [ el
+                [ link
+                    [ Background.color <| colorBlue
+                    , Font.color <| rgb255 255 255 255
+                    , width (px 15)
+                    , height fill
+                    ]
+                    { url = "/"
+                    , label = Element.text ""
+                    }
+                , el
                     [ centerX
                     , alignBottom
                     , padding 15

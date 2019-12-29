@@ -9,6 +9,7 @@ import Element.Font as Font
 import Html exposing (..)
 import Html.Attributes exposing (classList, href)
 import Html.Events exposing (..)
+import Style exposing (..)
 
 
 initialModel : HomeModel
@@ -19,18 +20,6 @@ initialModel =
 init : () -> ( HomeModel, Cmd Msg )
 init _ =
     ( initialModel, Cmd.none )
-
-
-colorBlue =
-    rgb255 0 111 255
-
-
-colorPink =
-    rgb255 255 0 111
-
-
-colorGreen =
-    rgb255 111 255 0
 
 
 view : HomeModel -> Html Msg
@@ -75,22 +64,6 @@ viewHeader =
                     , Font.color <| rgb255 255 255 255
                     , padding 8
                     ]
-                    { url = "/"
-                    , label = Element.text "Home"
-                    }
-                , link
-                    [ Background.color <| colorPink
-                    , Font.color <| rgb255 255 255 255
-                    , padding 8
-                    ]
-                    { url = "/elmui"
-                    , label = Element.text "elm-ui"
-                    }
-                , link
-                    [ Background.color <| colorPink
-                    , Font.color <| rgb255 255 255 255
-                    , padding 8
-                    ]
                     { url = "/elmui"
                     , label = Element.text "elm-ui"
                     }
@@ -102,8 +75,6 @@ viewHeader =
         , width fill
         , height fill
         , padding 200
-
-        -- , Background.color <| rgb255 166 255 0
         ]
         [ logo, links ]
 
