@@ -38,8 +38,7 @@ view model =
                     text "Not Found"
     in
     { title = "What is elm?"
-    , body =
-        [ content ]
+    , body = [ content ]
     }
 
 

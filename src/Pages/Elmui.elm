@@ -1,7 +1,11 @@
 module Pages.Elmui exposing (..)
 
 import Common exposing (ElmuiModel)
-import Html exposing (Html, button, div, text)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Html exposing (Html)
 import Html.Events exposing (onClick)
 
 
@@ -31,11 +35,30 @@ init _ =
 
 view : ElmuiModel -> Html Msg
 view model =
-    div []
-        [ button [ onClick Decrement ] [ text "-" ]
-        , text (String.fromInt model)
-        , button [ onClick Increment ] [ text "+" ]
-        ]
+    let
+        content =
+            column
+                [ width fill
+                , height fill
+                , Background.color (rgb255 255 (model * 10) 0)
+                ]
+                [ el
+                    [ centerX
+                    , alignBottom
+                    , padding 15
+                    , Background.color (rgb255 33 (model * 10) 243)
+                    , Font.color (rgb255 255 255 255)
+                    , Font.family
+                        [ Font.typeface "Futura"
+                        , Font.sansSerif
+                        ]
+                    ]
+                    (text <| "Page " ++ String.fromInt model)
+                ]
+    in
+    Element.layout
+        []
+        content
 
 
 type Msg

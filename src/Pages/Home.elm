@@ -2,6 +2,10 @@ module Pages.Home exposing (..)
 
 import Browser
 import Common exposing (HomeModel, Page, Route)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
 import Html exposing (..)
 import Html.Attributes exposing (classList, href)
 import Html.Events exposing (..)
@@ -17,40 +21,96 @@ init _ =
     ( initialModel, Cmd.none )
 
 
+colorBlue =
+    rgb255 0 111 255
+
+
+colorPink =
+    rgb255 255 0 111
+
+
+colorGreen =
+    rgb255 111 255 0
+
+
 view : HomeModel -> Html Msg
 view model =
-    div []
-        [ viewHeader
-        , button [ onClick Decrement ] [ text "-" ]
-        , text (String.fromInt model)
-        , button [ onClick Increment ] [ text "+" ]
-        , viewFooter
+    let
+        content =
+            row [] [ Element.text "Hello World" ]
+    in
+    Element.layout
+        [ height fill
+        , width fill
+        , Font.family
+            [ Font.typeface "Avenir"
+            , Font.sansSerif
+            ]
+        , centerX
+        , centerY
+        , Background.color colorGreen
         ]
+        viewHeader
 
 
-viewHeader : Html Msg
+viewHeader : Element Msg
 viewHeader =
     let
         logo =
-            h1 [] [ text "What is elm?" ]
+            el
+                [ paddingXY 5 15
+                , Font.size 64
+                , Font.color <| rgb255 255 255 255
+                , Background.color <| colorPink
+                ]
+                (Element.text "What is elm?")
 
         links =
-            ul []
-                [ navLink { url = "/", caption = "Home" }
-                , navLink { url = "/elmui", caption = "Elmui" }
+            row
+                [ spacing 5
+                , paddingXY 0 5
                 ]
-
-        navLink : { url : String, caption : String } -> Html msg
-        navLink { url, caption } =
-            li []
-                [ a [ href url ] [ text caption ] ]
+                [ link
+                    [ Background.color <| colorPink
+                    , Font.color <| rgb255 255 255 255
+                    , padding 8
+                    ]
+                    { url = "/"
+                    , label = Element.text "Home"
+                    }
+                , link
+                    [ Background.color <| colorPink
+                    , Font.color <| rgb255 255 255 255
+                    , padding 8
+                    ]
+                    { url = "/elmui"
+                    , label = Element.text "elm-ui"
+                    }
+                , link
+                    [ Background.color <| colorPink
+                    , Font.color <| rgb255 255 255 255
+                    , padding 8
+                    ]
+                    { url = "/elmui"
+                    , label = Element.text "elm-ui"
+                    }
+                ]
     in
-    nav [] [ logo, links ]
+    column
+        [ centerX
+        , centerY
+        , width fill
+        , height fill
+        , padding 200
+
+        -- , Background.color <| rgb255 166 255 0
+        ]
+        [ logo, links ]
 
 
-viewFooter : Html msg
+viewFooter : Element msg
 viewFooter =
-    footer [] [ text "Footer" ]
+    el [] (Element.text "Hello Footer")
 
 
 type Msg
