@@ -11247,7 +11247,6 @@ var $author$project$Main$subscriptions = function (model) {
 	}
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
-var $elm$core$Debug$log = _Debug_log;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$Builder$toQueryPair = function (_v0) {
 	var key = _v0.a;
@@ -11344,26 +11343,25 @@ var $author$project$Main$update = F2(
 				} else {
 					var url = urlRequest.a;
 					var modifiedUrl = _Utils_ap(model.basePath, url.path);
-					var _v2 = A2($elm$core$Debug$log, 'BasePath', model.basePath);
 					return _Utils_Tuple2(
 						model,
 						A2($elm$browser$Browser$Navigation$pushUrl, model.key, modifiedUrl));
 				}
 			case 'Increment':
 				var incremented = function (val) {
-					var _v5 = $elm$core$String$toInt(val);
-					if (_v5.$ === 'Just') {
-						var v = _v5.a;
+					var _v4 = $elm$core$String$toInt(val);
+					if (_v4.$ === 'Just') {
+						var v = _v4.a;
 						return $elm$core$String$fromInt(v + 1);
 					} else {
 						return '1';
 					}
 				};
-				var _v3 = A2($elm$url$Url$Parser$parse, $author$project$Main$parser, model.url);
-				if (_v3.$ === 'Just') {
-					if (_v3.a.$ === 'ElmuiQuery') {
-						if (_v3.a.a.$ === 'Just') {
-							var val = _v3.a.a.a;
+				var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$parser, model.url);
+				if (_v2.$ === 'Just') {
+					if (_v2.a.$ === 'ElmuiQuery') {
+						if (_v2.a.a.$ === 'Just') {
+							var val = _v2.a.a.a;
 							return _Utils_Tuple2(
 								model,
 								A2(
@@ -11381,7 +11379,7 @@ var $author$project$Main$update = F2(
 												incremented(val))
 											]))));
 						} else {
-							var _v4 = _v3.a.a;
+							var _v3 = _v2.a.a;
 							return _Utils_Tuple2(
 								model,
 								A2(
@@ -11404,9 +11402,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'Decrement':
 				var buildQuery = function (val) {
-					var _v8 = $elm$core$String$toInt(val);
-					if (_v8.$ === 'Just') {
-						var v = _v8.a;
+					var _v7 = $elm$core$String$toInt(val);
+					if (_v7.$ === 'Just') {
+						var v = _v7.a;
 						var res = v - 1;
 						return (res > 0) ? _List_fromArray(
 							[
@@ -11419,11 +11417,11 @@ var $author$project$Main$update = F2(
 						return _List_Nil;
 					}
 				};
-				var _v6 = A2($elm$url$Url$Parser$parse, $author$project$Main$parser, model.url);
-				if (_v6.$ === 'Just') {
-					if (_v6.a.$ === 'ElmuiQuery') {
-						if (_v6.a.a.$ === 'Just') {
-							var val = _v6.a.a.a;
+				var _v5 = A2($elm$url$Url$Parser$parse, $author$project$Main$parser, model.url);
+				if (_v5.$ === 'Just') {
+					if (_v5.a.$ === 'ElmuiQuery') {
+						if (_v5.a.a.$ === 'Just') {
+							var val = _v5.a.a.a;
 							return _Utils_Tuple2(
 								model,
 								A2(
@@ -11435,7 +11433,7 @@ var $author$project$Main$update = F2(
 											[model.url.path]),
 										buildQuery(val))));
 						} else {
-							var _v7 = _v6.a.a;
+							var _v6 = _v5.a.a;
 							return _Utils_Tuple2(
 								model,
 								A2(
@@ -11460,9 +11458,9 @@ var $author$project$Main$update = F2(
 				return A2($author$project$Main$updateUrl, url, model);
 			case 'GotElmuiMsg':
 				var foldersMsg = msg.a;
-				var _v9 = model.page;
-				if (_v9.$ === 'ElmuiPage') {
-					var folders = _v9.a;
+				var _v8 = model.page;
+				if (_v8.$ === 'ElmuiPage') {
+					var folders = _v8.a;
 					return A2(
 						$author$project$Main$toFolders,
 						model,
@@ -11472,9 +11470,9 @@ var $author$project$Main$update = F2(
 				}
 			default:
 				var foldersMsg = msg.a;
-				var _v10 = model.page;
-				if (_v10.$ === 'HomePage') {
-					var folders = _v10.a;
+				var _v9 = model.page;
+				if (_v9.$ === 'HomePage') {
+					var folders = _v9.a;
 					return A2(
 						$author$project$Main$toHome,
 						model,
@@ -18026,7 +18024,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61693" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63464" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
