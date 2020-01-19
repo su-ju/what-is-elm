@@ -10,7 +10,7 @@ import Pages.Elmui as Elmui
 import Pages.Home as Home
 import Url exposing (Url)
 import Url.Builder as Builder
-import Url.Parser as Parser exposing ((<?>), Parser, s, string)
+import Url.Parser as Parser exposing ((</>), (<?>), Parser, s, string)
 import Url.Parser.Query as Query
 
 
@@ -18,6 +18,12 @@ type alias Model =
     { page : Page
     , key : Nav.Key
     , url : Url
+    , basePath : String
+    }
+
+
+type alias Flags =
+    { basePath : String
     }
 
 
@@ -69,7 +75,11 @@ update msg model =
                     ( model, Nav.load href )
 
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.key (Url.toString url) )
+                    let
+                        modifiedUrl =
+                            model.basePath ++ url.path
+                    in
+                    ( model, Nav.pushUrl model.key modifiedUrl )
 
         Increment ->
             let
@@ -165,7 +175,7 @@ toHome model ( home, cmd ) =
     )
 
 
-main : Program Float Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -177,9 +187,9 @@ main =
         }
 
 
-init : Float -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    updateUrl url { page = NotFound, key = key, url = url }
+    updateUrl url { page = NotFound, key = key, url = url, basePath = flags.basePath }
 
 
 subscriptions : Model -> Sub Msg
@@ -194,7 +204,11 @@ subscriptions model =
 
 updateUrl : Url -> Model -> ( Model, Cmd Msg )
 updateUrl url model =
-    case Parser.parse parser url of
+    let
+        relativeUrl =
+            { url | path = String.replace model.basePath "" url.path }
+    in
+    case Parser.parse parser relativeUrl of
         Just HomeRoute ->
             ( { model | page = HomePage 10 }, Cmd.none )
 
