@@ -15,12 +15,18 @@
   "homepage": "https://github.com/julian-suess/what-is-elm#readme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "build" : "parcel build index.html",
+    "start" : "parcel index.html"
   },
   "keywords": [],
   "devDependencies": {
     "elm-hot": "^1.1.4",
     "gh-pages": "^2.1.1",
     "node-elm-compiler": "^5.0.4"
+  },
+  "dependencies": {
+    "parcel": "^1.12.4",
+    "parcel-bundler": "^1.12.4"
   }
 }
