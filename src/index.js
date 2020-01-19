@@ -1,9 +1,6 @@
-import { Elm } from "./Main.elm";
+import { Elm } from './Main.elm'
 
-const basePath = new URL(document.baseURI).pathname;
 Elm.Main.init({
-  flags: {
-    basePath: basePath
-  },
-  node: document.querySelector("main")
-});
+  flags : 1,
+  node  : document.querySelector('main')
+})
